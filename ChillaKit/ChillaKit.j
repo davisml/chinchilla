@@ -4,3 +4,4 @@
 @import "CCURLRequest.j"
 @import "CCFileManager.j"
 @import "CCLayout.j"
+@import "CCTask.j"

@@ -27,4 +27,63 @@ var defaultManager = nil;
 	return file.list(path);
 }
 
+- (BOOL)fileExistsAtPath:(CPString)path
+{
+	return CCFileExistsAtPath(path);
+}
+
+- (BOOL)fileExistsAtPath:(CPString)path isDirectory:(BOOL)flagPointer
+{
+	flagPointer = CCFileIsDirectoryAtPath(path);
+	return [self fileExistsAtPath:path];
+}
+
+- (CPData)contentsAtPath:(CPString)path
+{
+	return CCFileContentsAtPath(path);
+}
+
+- (BOOL)contentsEqualAtPath:(CPString)path1 andPath:(CPString)path2
+{
+	return ([self contentsAtPath:path1]==[self contentsAtPath:path2]);
+}
+
+- (BOOL)moveItemAtPath:(CPString)path1 toPath:(CPString)path2 error:(CPError)error
+{
+	return CCFileMoveToPath(path1,path2);
+}
+
+- (BOOL)copyItemAtPath:(CPString)path1 toPath:(CPString)path2 error:(CPError)error
+{
+	return CCFileCopyToPath(path1,path2);
+}
+
 @end
+
+function CCFileExistsAtPath(path)
+{
+	return file.exists(path);
+}
+
+function CCFileIsDirectoryAtPath(path)
+{
+	return file.isDirectory(path);
+}
+
+function CCFileContentsAtPath(path)
+{
+	return file.read(path,[]);
+}
+
+function CCFileMoveToPath(filePath,toPath)
+{
+	file.move(filePath,toPath);
+	return YES;
+}
+
+
+function CCFileCopyToPath(filePath,toPath)
+{
+	file.copy(filePath,toPath);
+	return YES;
+}
