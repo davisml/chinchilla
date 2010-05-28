@@ -40,6 +40,13 @@ var defaultManager = nil;
 
 - (CPData)contentsAtPath:(CPString)path
 {
+	return [self contentsAtPath:path binary:NO];
+}
+
+- (CPData)contentsAtPath:(CPString)path binary:(BOOL)flag
+{
+	if (flag)
+		return CCFileBinaryContentsAtPath(path)
 	return CCFileContentsAtPath(path);
 }
 
@@ -76,6 +83,11 @@ function CCFileExistsAtPath(path)
 function CCFileIsDirectoryAtPath(path)
 {
 	return file.isDirectory(CCFileCleanPath(path));
+}
+
+function CCFileBinaryContentsAtPath(path)
+{
+	return file.read(CCFileCleanPath(path),"b");
 }
 
 function CCFileContentsAtPath(path)

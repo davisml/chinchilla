@@ -1,5 +1,15 @@
 var MagickConfig = require("./magick_config");
 
+/*
+	@global
+	@group CCImageEffect
+*/
+
+CCImageEffectNone = 0;
+CCImageEffectGrayscale = 1;
+CCImageEffectSepia = 2;
+CCImageEffectAntique = 3;
+
 @implementation CCImageConverter : CPObject
 {
 	CPString	inputFile @accessors;
@@ -7,7 +17,13 @@ var MagickConfig = require("./magick_config");
 	CGSize		outputSize @accessors;
 	BOOL 		autoOrient @accessors;
 	BOOL		blur @accessors;
+	CCImageEffect effect @accessors;
 	CPString	inputFormat @accessors;
+}
+
++ (id)converterWithContentsOfFile:(CPString)aString
+{
+	return [[self alloc] initWithContentsOfFile:aString];
 }
 
 - (id)initWithContentsOfFile:(CPString)aString
@@ -16,12 +32,14 @@ var MagickConfig = require("./magick_config");
 	{
 		inputFile = aString;
 		inputFormat = nil;
+		if ([inputFile hasPrefix:@".jpg"]||[inputFile hasPrefix:@".jpeg"])
+			inputFormat = @"jpeg";
 		outputFile = nil;
 		inputSize = nil;
 		outputSize = nil;
 		blur = nil;
 		unsharpen = nil;
-		
+		effect = CCImageEffectNone;
 		autoOrient = YES;
 		unsharpen = NO;
 	}
@@ -54,12 +72,21 @@ var MagickConfig = require("./magick_config");
 		argumentString = [argumentString stringByAppendingString:@" -unsharp 0x.5"];
 	if (blur != nil)
 		argumentString = [argumentString stringByAppendingFormat:@" -blur %@",CCStringFromBlur(blur)];
+	if (effect != CCImageEffectNone)
+		argumentString = [argumentString stringByAppendingString:CCStringFromEffect(effect)];
+	
 	
 	var commandString = [CPString stringWithFormat:@"%@%@ %@%@ %@",convertPath,definitionString,inputFile,argumentString,outputFile];
 	CCLog(commandString);
 	var convertTask = [CCTask taskWithCommand:commandString];
 	
 	return YES;
+}
+
+- (BOOL)writeToFile:(CPString)outputFile withOutputSize:(CGSize)newSize atomically:(BOOL)flag
+{
+	outputSize = newSize;
+	return [self writeToFile:outputFile atomically:flag];
 }
 
 @end
@@ -80,4 +107,13 @@ function CCStringFromBlur(blur)
 function CCStringFromSize(size)
 {
 	return size.width + "x" + size.height;
+}
+
+function CCStringFromEffect(effect)
+{
+	if (effect == CCImageEffectSepia)
+		return @" -sepia-tone 80%";
+	else if (effect == CCImageEffectGrayscale)
+		return @" -colorspace Gray";
+	return @"";
 }
