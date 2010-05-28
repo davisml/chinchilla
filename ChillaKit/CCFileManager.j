@@ -89,7 +89,6 @@ function CCFileMoveToPath(filePath,toPath)
 	return YES;
 }
 
-
 function CCFileCopyToPath(filePath,toPath)
 {
 	file.copy(CCFileCleanPath(filePath),CCFileCleanPath(toPath));

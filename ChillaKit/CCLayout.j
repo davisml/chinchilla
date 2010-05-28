@@ -2,7 +2,7 @@
 {
 	CPString content @accessors;
 	int status @accessors;
-	CPString contentType @accessors;
+	JSObject headers @accessors;
 }
 
 - (id)init
@@ -10,7 +10,7 @@
 	if (self = [super init])
 	{
 		status = 200;
-		contentType = @"text/plain";
+		headers = {};
 	}
 	return self;
 }
@@ -36,7 +36,7 @@
 {
 	return {
 	    status : [self status],
-	    headers : {"Content-Type":contentType},
+	    headers : [self headers],
 	    body : [[self stringValue]]
 	};
 }
@@ -46,6 +46,7 @@
 @implementation CCHTMLLayout : CCLayout
 {
 	CPString title @accessors;
+	CPString style @accessors;
 }
 
 - (id)init
@@ -53,15 +54,16 @@
 	if (self = [super init])
 	{
 		status = 200;
-		contentType = @"text/html";
 		title = @"Chinchilla";
+		style = @"";
+		headers = {"Content-Type":"text/html"};
 	}
 	return self;
 }
 
 - (CPString)stringValue
 {
-	return [CPString stringWithFormat:@"<html>\n\t<head>\n\t\t<title>%@</title>\n\t</head>\n\t<body>\n\t%@\n\t</body>\n</html>",title,content];
+	return [CPString stringWithFormat:@"<html>\n\t<head>\n\t\t<title>%@</title>\n\t\t<style type=\"text/css\">%@</style>\n\t</head>\n\t<body>\n\t%@\n\t</body>\n</html>",title,style,content];
 }
 
 @end
@@ -76,7 +78,7 @@
 	if (self = [super init])
 	{
 		status = 200;
-		contentType = @"text/json";
+		headers = {"Content-Type":"text/json"};
 	}
 	return self;
 }

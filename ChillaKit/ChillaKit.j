@@ -1,3 +1,4 @@
+@import "CCImage/CCImage.j"
 @import "CCStringAddons.j"
 @import "CCAppController.j"
 @import "CCDataConnection.j"
@@ -6,5 +7,10 @@
 @import "CCFileManager.j"
 @import "CCLayout.j"
 @import "CCTask.j"
-@import "CCImageProcessing.j"
 @import "CGGeometry.j"
+@import "UUID.j"
+
+function CCLog(message)
+{
+	print(message);
+}
