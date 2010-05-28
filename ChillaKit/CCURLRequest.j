@@ -24,6 +24,24 @@ var CCJackEnvQueryStringKey = @"QUERY_STRING";
 	return self;
 }
 
+- (Object)postData
+{
+	return jsRequest.POST();
+}
+
+- (CPArray)pathComponents
+{
+	var cleanComponents = [CPMutableArray array];
+	var componentArray = [pathString componentsSeparatedByString:@"/"];
+	for (var i=0;i<[componentArray count];i++)
+	{
+		var componentString = [componentArray objectAtIndex:i];
+		if ([componentString length]>0)
+			[cleanComponents addObject:componentString];
+	}
+	return cleanComponents;
+}
+
 + (id)requestWithEnvironment:(Object)environment
 {
 	return [[[self alloc] initWithEnvironment:environment] autorelease];

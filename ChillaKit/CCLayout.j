@@ -54,6 +54,7 @@
 	{
 		status = 200;
 		contentType = @"text/html";
+		title = @"Chinchilla";
 	}
 	return self;
 }

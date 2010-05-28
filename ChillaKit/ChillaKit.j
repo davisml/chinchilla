@@ -1,3 +1,4 @@
+@import "CCStringAddons.j"
 @import "CCAppController.j"
 @import "CCDataConnection.j"
 @import "CCDataCredentials.j"
@@ -5,3 +6,5 @@
 @import "CCFileManager.j"
 @import "CCLayout.j"
 @import "CCTask.j"
+@import "CCImageProcessing.j"
+@import "CGGeometry.j"

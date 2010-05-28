@@ -60,30 +60,38 @@ var defaultManager = nil;
 
 @end
 
+function CCFileCleanPath(path)
+{
+	var newPath = path;
+	if ([newPath hasPrefix:@"file:"])
+	 	newPath = [newPath substringFromIndex:5];
+	return newPath;
+}
+
 function CCFileExistsAtPath(path)
 {
-	return file.exists(path);
+	return file.exists(CCFileCleanPath(path));
 }
 
 function CCFileIsDirectoryAtPath(path)
 {
-	return file.isDirectory(path);
+	return file.isDirectory(CCFileCleanPath(path));
 }
 
 function CCFileContentsAtPath(path)
 {
-	return file.read(path,[]);
+	return file.read(CCFileCleanPath(path),[]);
 }
 
 function CCFileMoveToPath(filePath,toPath)
 {
-	file.move(filePath,toPath);
+	file.move(CCFileCleanPath(filePath),CCFileCleanPath(toPath));
 	return YES;
 }
 
 
 function CCFileCopyToPath(filePath,toPath)
 {
-	file.copy(filePath,toPath);
+	file.copy(CCFileCleanPath(filePath),CCFileCleanPath(toPath));
 	return YES;
 }
