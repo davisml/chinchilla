@@ -39,27 +39,20 @@ var CCQueryLimitKey = @"limit";
 	return @"";
 }
 
-- (Object)find:(Object)queryObject
+- (CPArray)find:(Object)queryObject
 {
-	var queryString = CCModelQueryWithObject(queryObject,[self tableName]);
-	return CCModelRecordsWithResult(stat.executeQuery(queryString),[self columns]);
+	return CCModelRecordsWithQuery(queryObject,[self tableName],[self columns]);
 }
 
 - (CPArray)findAll
 {
-	var queryObject = {};
-	var queryString = CCModelQueryWithObject(queryObject,[self tableName]);
-	
-	return CCModelRecordsWithResult(stat.executeQuery(queryString),[self columns]);
+	return [self find:nil];
 }
 
 - (Object)findByID:(CPString)recordID
 {
 	var queryObject = {CCQueryConditionsKey:{"id":recordID},CCQueryLimitKey:"1"};
-	var queryString = CCModelQueryWithObject(queryObject,[self tableName]);
-	var records = CCModelRecordsWithResult(stat.executeQuery(queryString),[self columns]);
-	
-	return [records lastObject];
+	return [[self find:queryObject] lastObject];
 }
 
 - (void)insert:(Object)anObject
@@ -124,8 +117,15 @@ function CCModelRecordWithResult(rs,columns)
 	return record;
 }
 
-function CCModelRecordsWithResult(rs,columns)
+function CCModelRecordsWithQuery(queryObject,tableName,columns)
 {
+	var queryString = CCModelQueryWithObject(queryObject,tableName);
+	return CCModelRecordsWithQueryString(queryObject,columns);
+}
+
+function CCModelRecordsWithQueryString(queryString,columns)
+{
+	var rs = stat.executeQuery(queryString);
 	var records = [];
 	while (rs.next()) records.push(CCModelRecordWithResult(rs,columns));
 	rs.close();
@@ -134,32 +134,33 @@ function CCModelRecordsWithResult(rs,columns)
 
 function CCModelQueryWithObject(queryObject,tableName)
 {
-	var conditions = queryObject[CCQueryConditionsKey];
 	var whereStatement = @"";
-	
-	if (conditions != nil)
-	{
-		var conditionStrings = [CPMutableArray array];
-		
-		for (var key in conditions)
-		{
-			var value = conditions[key];
-			var conditionString = key+"='"+value+"'";
-			[conditionStrings addObject:conditionString];
-		}
-		
-		if ([conditionStrings count]>0)
-			whereStatement = " WHERE "+[conditionStrings componentsJoinedByString:@", "];
-	}
-	
-	var limit = queryObject[CCQueryLimitKey];
 	var limitStatement = @"";
-	if (limit != nil)
+	
+	if (queryObject != nil)
 	{
-		limitStatement = " LIMIT "+limit;
+		var conditions = queryObject[CCQueryConditionsKey];
+	
+		if (conditions != nil)
+		{
+			var conditionStrings = [CPMutableArray array];
+		
+			for (var key in conditions)
+			{
+				var value = conditions[key];
+				var conditionString = key+"='"+value+"'";
+				[conditionStrings addObject:conditionString];
+			}
+		
+			if ([conditionStrings count]>0)
+				whereStatement = " WHERE "+[conditionStrings componentsJoinedByString:@", "];
+		}
+	
+		var limit = queryObject[CCQueryLimitKey];
+		
+		if (limit != nil)
+			limitStatement = " LIMIT "+limit;
 	}
 	
-	var queryString = "select * from "+tableName+whereStatement+limitStatement+";";
-	
-	return queryString;
+	return "select * from "+tableName+whereStatement+limitStatement+";";
 }
