@@ -1,5 +1,10 @@
 var JDBC = require("jdbc");
 
+var CCQueryConditionsKey = @"conditions";
+var CCQueryFieldsKey = @"fields";
+var CCQueryOrderKey = @"order";
+var CCQueryLimitKey = @"limit";
+
 @implementation CCModel : CPObject
 {
 	Statement stat;
@@ -34,16 +39,26 @@ var JDBC = require("jdbc");
 	return @"";
 }
 
+- (Object)find:(Object)queryObject
+{
+	var queryString = CCModelQueryWithObject(queryObject,[self tableName]);
+	return CCModelRecordsWithResult(stat.executeQuery(queryString),[self columns]);
+}
+
 - (CPArray)findAll
 {
-	var queryString = "select * from "+[self tableName]+";";
+	var queryObject = {};
+	var queryString = CCModelQueryWithObject(queryObject,[self tableName]);
+	
 	return CCModelRecordsWithResult(stat.executeQuery(queryString),[self columns]);
 }
 
 - (Object)findByID:(CPString)recordID
 {
-	var queryString = "select * from "+[self tableName]+" where id = "+recordID+";";
+	var queryObject = {CCQueryConditionsKey:{"id":recordID},CCQueryLimitKey:"1"};
+	var queryString = CCModelQueryWithObject(queryObject,[self tableName]);
 	var records = CCModelRecordsWithResult(stat.executeQuery(queryString),[self columns]);
+	
 	return [records lastObject];
 }
 
@@ -55,13 +70,12 @@ var JDBC = require("jdbc");
 	for (var key in anObject)
 	{
 		[keys addObject:key];
-		[values addObject:anObject["key"]];
+		[values addObject:anObject[key]];
 	}
 	
 	var fieldString = [keys componentsJoinedByString:@", "];
 	var valueString = "'"+[values componentsJoinedByString:@"', '"]+"'";
 	var sqlString = "INSERT INTO "+[self tableName]+" ("+fieldString+") VALUES("+valueString+");";
-	
 	stat.executeUpdate(sqlString);
 }
 
@@ -116,4 +130,36 @@ function CCModelRecordsWithResult(rs,columns)
 	while (rs.next()) records.push(CCModelRecordWithResult(rs,columns));
 	rs.close();
 	return records;
+}
+
+function CCModelQueryWithObject(queryObject,tableName)
+{
+	var conditions = queryObject[CCQueryConditionsKey];
+	var whereStatement = @"";
+	
+	if (conditions != nil)
+	{
+		var conditionStrings = [CPMutableArray array];
+		
+		for (var key in conditions)
+		{
+			var value = conditions[key];
+			var conditionString = key+"='"+value+"'";
+			[conditionStrings addObject:conditionString];
+		}
+		
+		if ([conditionStrings count]>0)
+			whereStatement = " WHERE "+[conditionStrings componentsJoinedByString:@", "];
+	}
+	
+	var limit = queryObject[CCQueryLimitKey];
+	var limitStatement = @"";
+	if (limit != nil)
+	{
+		limitStatement = " LIMIT "+limit;
+	}
+	
+	var queryString = "select * from "+tableName+whereStatement+limitStatement+";";
+	
+	return queryString;
 }
