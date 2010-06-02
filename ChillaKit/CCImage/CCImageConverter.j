@@ -1,14 +1,5 @@
 var MagickConfig = require("./magick_config");
-
-/*
-	@global
-	@group CCImageEffect
-*/
-
-CCImageEffectNone = 0;
-CCImageEffectGrayscale = 1;
-CCImageEffectSepia = 2;
-CCImageEffectAntique = 3;
+@import "CCImageTypes.j"
 
 @implementation CCImageConverter : CPObject
 {
@@ -115,5 +106,17 @@ function CCStringFromEffect(effect)
 		return @" -sepia-tone 80%";
 	else if (effect == CCImageEffectGrayscale)
 		return @" -colorspace Gray";
+	else if (effect == CCImageEffectAntique)
+		return @" -sepia-tone 80% -modulate 175,60,104";
+	else if (effect == CCImageEffectSketch)
+		return @" -sketch 2";
+	else if (effect == CCImageEffectBoostColor)
+		return @" -modulate 100,140";
+	else if (effect == CCImageEffectFadeColor)
+		return @" -modulate 100,60";
+	else if (effect == CCImageEffectVignette)
+		return @" -background black -vignette 10x20";
+	else if (effect == CCImageEffectMatte)
+		return @" -background white -vignette 10x20";
 	return @"";
 }

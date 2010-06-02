@@ -9,6 +9,8 @@
 @import "CCTask.j"
 @import "CGGeometry.j"
 @import "UUID.j"
+@import "CCScaffoldController.j"
+@import "CCModel.j"
 
 function CCLog(message)
 {
