@@ -41,7 +41,7 @@ var CCQueryLimitKey = @"limit";
 
 - (CPArray)find:(Object)queryObject
 {
-	return CCModelRecordsWithQuery(queryObject,[self tableName],[self columns]);
+	return CCModelRecordsWithQuery(stat,queryObject,[self tableName],[self columns]);
 }
 
 - (CPArray)findAll
@@ -63,12 +63,13 @@ var CCQueryLimitKey = @"limit";
 	for (var key in anObject)
 	{
 		[keys addObject:key];
-		[values addObject:anObject[key]];
+		[values addObject:"'"+anObject[key]+"'"];
 	}
 	
-	var fieldString = [keys componentsJoinedByString:@", "];
-	var valueString = "'"+[values componentsJoinedByString:@"', '"]+"'";
-	var sqlString = "INSERT INTO "+[self tableName]+" ("+fieldString+") VALUES("+valueString+");";
+	var keyString = " ("+[keys componentsJoinedByString:@", "]+")";
+	var valueString = " VALUES("+[values componentsJoinedByString:@", "]+")";
+	var sqlString = "INSERT INTO "+[self tableName]+keyString+valueString+";";
+	
 	stat.executeUpdate(sqlString);
 }
 
@@ -117,15 +118,14 @@ function CCModelRecordWithResult(rs,columns)
 	return record;
 }
 
-function CCModelRecordsWithQuery(queryObject,tableName,columns)
+function CCModelRecordsWithQuery(stat,queryObject,tableName,columns)
 {
 	var queryString = CCModelQueryWithObject(queryObject,tableName);
-	return CCModelRecordsWithQueryString(queryObject,columns);
+	return CCModelRecordsWithResult(stat.executeQuery(queryString),columns);
 }
 
-function CCModelRecordsWithQueryString(queryString,columns)
+function CCModelRecordsWithResult(rs,columns)
 {
-	var rs = stat.executeQuery(queryString);
 	var records = [];
 	while (rs.next()) records.push(CCModelRecordWithResult(rs,columns));
 	rs.close();
@@ -135,6 +135,7 @@ function CCModelRecordsWithQueryString(queryString,columns)
 function CCModelQueryWithObject(queryObject,tableName)
 {
 	var whereStatement = @"";
+	var orderStatement = @"";
 	var limitStatement = @"";
 	
 	if (queryObject != nil)
@@ -155,12 +156,25 @@ function CCModelQueryWithObject(queryObject,tableName)
 			if ([conditionStrings count]>0)
 				whereStatement = " WHERE "+[conditionStrings componentsJoinedByString:@", "];
 		}
-	
-		var limit = queryObject[CCQueryLimitKey];
-		
-		if (limit != nil)
-			limitStatement = " LIMIT "+limit;
 	}
 	
-	return "select * from "+tableName+whereStatement+limitStatement+";";
+	var limit = queryObject[CCQueryLimitKey];
+	if (limit != nil)
+		limitStatement = " LIMIT "+limit;
+	
+	var sortDescriptors = queryObject[CCQueryOrderKey];
+	if (sortDescriptors != nil)
+	{
+		var orderStatements = [CPMutableArray array];
+		
+		for (var i=0;i<[sortDescriptors count];i++)
+		{
+			var sortDescriptor = [sortDescriptors objectAtIndex:i];
+			[orderStatements addObject:[sortDescriptor key]+" "+[sortDescriptor ascending]?@"ASC":@"DESC"];
+		}
+		
+		orderStatement = " ORDER BY "+[orderStatements componentsJoinedByString:@", "];
+	}
+	
+	return "select * from "+tableName+whereStatement+orderStatement+limitStatement+";";
 }
