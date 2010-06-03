@@ -1,4 +1,4 @@
-var MagickConfig = require("./magick_config");
+var MagickConfig = require("./Config/magick_config");
 @import "CCImageTypes.j"
 
 @implementation CCImageConverter : CPObject

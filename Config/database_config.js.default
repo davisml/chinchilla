@@ -1,0 +1,12 @@
+// SQLite Configuration
+
+exports.adapter = "sqlite3";
+exports.database = "db/development.sqlite3";
+
+// MySQL Configuration
+
+// exports.adapter = "mysql";
+// exports.database = "mydatabase";
+// exports.username = "myusername";
+// exports.password = "mypassword";
+// exports.server = "localhost";

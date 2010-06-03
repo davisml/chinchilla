@@ -1,0 +1,1 @@
+exports.magickPath = "/opt/local/bin";

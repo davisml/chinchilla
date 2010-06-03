@@ -1,4 +1,4 @@
-var VideoConfig = require("./video_config");
+var FFmpegConfig = require("./Config/ffmpeg_config");
 
 @implementation CCVideoConverter : CPObject
 {
@@ -21,7 +21,7 @@ var VideoConfig = require("./video_config");
 
 - (CPString)_scriptPath
 {
-	return ""+VideoConfig.ffmpegPath;
+	return ""+FFmpegConfig.ffmpegPath;
 }
 
 - (BOOL)writePosterImageToFile:(CPString)outputFile atomically:(BOOL)flag
