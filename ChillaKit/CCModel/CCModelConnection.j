@@ -1,29 +1,26 @@
-var DBConfig = require("./Config/database_config");
-var JDBC = require("jdbc");
+@import "../../Config/CCDatabaseConfig.j"
 
+var JDBC = require("jdbc");
 var sharedModelConnection;
 
 @implementation CCModelConnection : CPObject
 {
 	Connection	conn;
-	CPString	adapter @accessors;
 }
 
 - (id)init
 {
 	if (self = [super init])
 	{
-		if ([[self adapter] isEqual:@"mysql"])
-			conn = JDBC.connect("jdbc:mysql://"+DBConfig.server+":3306/"+DBConfig.database+"?user="+DBConfig.username+"&password="+DBConfig.password);
+		CCLog(@"init database connection");
+		CCLog(CCDatabaseConfig.adapter);
+		
+		if ([CCDatabaseConfig.adapter isEqual:@"mysql"])
+			conn = JDBC.connect("jdbc:mysql://"+CCDatabaseConfig.server+":3306/"+CCDatabaseConfig.database+"?user="+CCDatabaseConfig.username+"&password="+CCDatabaseConfig.password);
 		else if ([[self adapter] hasPrefix:@"sqlite"])
-			conn = JDBC.connect("jdbc:sqlite:"+DBConfig.database);
+			conn = JDBC.connect("jdbc:sqlite:"+CCDatabaseConfig.database);
 	}
 	return self;
-}
-
-- (CPString)adapter
-{
-	return ""+DBConfig.adapter;
 }
 
 - (id)createStatement

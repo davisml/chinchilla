@@ -1,4 +1,3 @@
-@import "CCImage/CCImage.j"
 @import "CCModel/CCModel.j"
 @import "CCStringAddons.j"
 @import "CCAppController.j"

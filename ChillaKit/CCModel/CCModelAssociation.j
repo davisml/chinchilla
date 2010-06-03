@@ -12,10 +12,10 @@ CCModelAssociationHasAndBelongsToMany = 3;
 
 @implementation CCModelAssociation : CPObject
 {
-	CCModelAssociationType associationType @acessors;
+	CCModelAssociationType associationType @accessors;
 	CPString modelName @accessors;
 	CPString foreignTable @accessors;
-	CPString foreignKey @accesssors;
+	CPString foreignKey @accessors;
 	CPString associatedForeignKey @accessors;
 	CCModel  associatedModel @accessors;
 }

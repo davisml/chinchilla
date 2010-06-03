@@ -1,0 +1,4 @@
+CCVideoConfig = {};
+
+CCVideoConfig.adapter = "ffmpeg";
+CCVideoConfig.path = "/usr/local/bin/ffmpeg";

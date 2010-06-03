@@ -1,0 +1,14 @@
+CCDatabaseConfig = {};
+
+// SQLite Configuration
+
+CCDatabaseConfig.adapter = "sqlite3";
+CCDatabaseConfig.database = "db/development.sqlite3";
+
+// MySQL Configuration
+
+// CCDatabaseConfig.adapter = "mysql";
+// CCDatabaseConfig.database = "mydatabase";
+// CCDatabaseConfig.username = "myusername";
+// CCDatabaseConfig.password = "mypassword";
+// CCDatabaseConfig.server = "localhost";

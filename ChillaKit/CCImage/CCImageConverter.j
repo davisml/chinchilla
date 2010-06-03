@@ -1,4 +1,4 @@
-var MagickConfig = require("./Config/magick_config");
+@import "../../Config/CCImageConfig.j"
 @import "CCImageTypes.j"
 
 @implementation CCImageConverter : CPObject
@@ -39,7 +39,7 @@ var MagickConfig = require("./Config/magick_config");
 
 - (CPString)_scriptPath
 {
-	return ""+MagickConfig.magickPath+"/convert";
+	return CCImageConfig.path+"/convert";
 }
 
 - (BOOL)writeToFile:(CPString)outputFile atomically:(BOOL)flag

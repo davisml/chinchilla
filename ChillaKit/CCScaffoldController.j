@@ -29,6 +29,7 @@
 
 - (CPArray)records
 {
+	CCLog(@"return records");
 	return [model findAll];
 }
 

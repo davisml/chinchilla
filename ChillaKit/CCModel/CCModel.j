@@ -36,6 +36,7 @@ var CCQueryLimitKey = @"limit";
 
 - (Statement)statement
 {
+	CCLog(@"return statement");
 	if (stat == nil)
 		stat = [[CCModelConnection sharedModelConnection] createStatement];
 	return stat;
@@ -159,24 +160,24 @@ function CCModelQueryWithObject(queryObject,tableName)
 			if ([conditionStrings count]>0)
 				whereStatement = " WHERE "+[conditionStrings componentsJoinedByString:@", "];
 		}
-	}
-	
-	var limit = queryObject[CCQueryLimitKey];
-	if (limit != nil)
-		limitStatement = " LIMIT "+limit;
-	
-	var sortDescriptors = queryObject[CCQueryOrderKey];
-	if (sortDescriptors != nil)
-	{
-		var orderStatements = [CPMutableArray array];
 		
-		for (var i=0;i<[sortDescriptors count];i++)
+		var limit = queryObject[CCQueryLimitKey];
+		if (limit != nil)
+			limitStatement = " LIMIT "+limit;
+
+		var sortDescriptors = queryObject[CCQueryOrderKey];
+		if (sortDescriptors != nil)
 		{
-			var sortDescriptor = [sortDescriptors objectAtIndex:i];
-			[orderStatements addObject:[sortDescriptor key]+" "+[sortDescriptor ascending]?@"ASC":@"DESC"];
+			var orderStatements = [CPMutableArray array];
+
+			for (var i=0;i<[sortDescriptors count];i++)
+			{
+				var sortDescriptor = [sortDescriptors objectAtIndex:i];
+				[orderStatements addObject:[sortDescriptor key]+" "+[sortDescriptor ascending]?@"ASC":@"DESC"];
+			}
+
+			orderStatement = " ORDER BY "+[orderStatements componentsJoinedByString:@", "];
 		}
-		
-		orderStatement = " ORDER BY "+[orderStatements componentsJoinedByString:@", "];
 	}
 	
 	return "select * from "+tableName+whereStatement+orderStatement+limitStatement+";";

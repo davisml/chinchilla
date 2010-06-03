@@ -1,28 +1,17 @@
 #!/usr/bin/env jackup
 
-@import <Foundation/Foundation.j>
+require("./Classes/MyController");
 
-@implementation WebController : CPObject
-{
-}
+var JACK = require("jack");
+var appController = [[MyController alloc] init];
 
-- (Object)dispatch:(Object)env
-{
-    return {
-        status : 200,
-        headers : {"Content-Type":"text/plain"},
-        body : ["controller="+self]
-    };
-}
-
-@end
-
-var controller = [[WebController alloc] init];
-
-// the "app" export is the default property used by jackup:
-exports.app = function(env) {
-    return [controller dispatch:env];
-}
+exports.app = JACK.URLMap({
+	"/public" : JACK.File("public"),
+	"/" : function(env)
+	{
+    	return [appController dispatchRequest:[CCURLRequest requestWithEnvironment:env]];
+	}
+});
 
 // specify custom sets of middleware and initialization routines
 // by defining a function with the same name as the environment:

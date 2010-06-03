@@ -1,0 +1,4 @@
+CCImageConfig = {};
+
+CCImageConfig.adapter = "imagemagick";
+CCImageConfig.path = "/opt/local/bin";

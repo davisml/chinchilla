@@ -1,4 +1,4 @@
-var MagickConfig = require("./magick_config");
+@import "../../Config/CCImageConfig.j"
 
 @implementation CCImageIdentifier : CPObject
 {
@@ -23,7 +23,7 @@ var MagickConfig = require("./magick_config");
 
 - (CPString)_scriptPath
 {
-	return ""+MagickConfig.magickPath+"/identify";
+	return CCImageConfig.path+"/identify";
 }
 
 - (CGSize)size
