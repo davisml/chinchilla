@@ -53,7 +53,7 @@ CCModelAssociationHasAndBelongsToMany = 3;
 {
 	if ((foreignTable == nil || [foreignTable isEqual:@""]) && modelName != nil)
 		return CCModelTableName(modelName);
-	return foreignKey;
+	return foreignTable;
 }
 
 - (CPString)associatedForeignKey

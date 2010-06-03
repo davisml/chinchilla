@@ -12,9 +12,6 @@ var sharedModelConnection;
 {
 	if (self = [super init])
 	{
-		CCLog(@"init database connection");
-		CCLog(CCDatabaseConfig.adapter);
-		
 		if ([CCDatabaseConfig.adapter isEqual:@"mysql"])
 			conn = JDBC.connect("jdbc:mysql://"+CCDatabaseConfig.server+":3306/"+CCDatabaseConfig.database+"?user="+CCDatabaseConfig.username+"&password="+CCDatabaseConfig.password);
 		else if ([[self adapter] hasPrefix:@"sqlite"])

@@ -16,7 +16,6 @@
 
 - (void)setClass:(Class)aClass forControllerKey:(CPString)key
 {
-	CCLog(@"set class");
 	[controllerClasses setValue:aClass forKey:key];
 }
 

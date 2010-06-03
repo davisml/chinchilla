@@ -68,7 +68,6 @@
 	
 	
 	var commandString = [CPString stringWithFormat:@"%@%@ %@%@ %@",convertPath,definitionString,inputFile,argumentString,outputFile];
-	CCLog(commandString);
 	var convertTask = [CCTask taskWithCommand:commandString];
 	
 	return YES;

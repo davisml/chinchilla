@@ -56,7 +56,7 @@
 
 - (CPArray)find:(Object)queryObject
 {
-	return CCModelRecordsWithQuery([self statement],queryObject,[self tableName],[self _allColumns]);
+	return CCModelRecordsWithQuery(queryObject,self);
 }
 
 - (CPArray)findAll
@@ -125,9 +125,11 @@ function CCModelRecordWithResult(rs,columns)
 	return record;
 }
 
-function CCModelRecordsWithQuery(stat,queryObject,tableName,columns)
+function CCModelRecordsWithQuery(queryObject,model)
 {
-	var queryString = CCModelQueryWithObject(queryObject,tableName);
+	var stat = [model statement];
+	var columns = [model _allColumns];
+	var queryString = CCModelQueryWithObject(queryObject,model);
 	return CCModelRecordsWithResult(stat.executeQuery(queryString),columns);
 }
 

@@ -31,8 +31,6 @@
 
 - (CPArray)records
 {
-	CCLog(@"return records");
-	CCLog([[self model] description]);
 	return [[self model] findAll];
 }
 
