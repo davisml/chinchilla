@@ -1,16 +1,13 @@
 @import "CCModelAssociation.j"
 @import "CCModelConnection.j"
 @import "CCModelSharedFunctions.j"
-
-var CCQueryConditionsKey = @"conditions";
-var CCQueryFieldsKey = @"fields";
-var CCQueryOrderKey = @"order";
-var CCQueryLimitKey = @"limit";
+@import "CCModelQuery.j"
 
 @implementation CCModel : CPObject
 {
 	Statement		stat;
 	CPMutableArray	associations @accessors;
+	BOOL			shouldAutoUpdateDates @accessors;
 }
 
 - (id)init
@@ -18,6 +15,7 @@ var CCQueryLimitKey = @"limit";
 	if (self = [super init])
 	{
 		stat = nil;
+		shouldAutoUpdateDates = NO;
 		associations = [[CPMutableArray alloc] init];
 	}
 	return self;
@@ -36,7 +34,6 @@ var CCQueryLimitKey = @"limit";
 
 - (Statement)statement
 {
-	CCLog(@"return statement");
 	if (stat == nil)
 		stat = [[CCModelConnection sharedModelConnection] createStatement];
 	return stat;
@@ -75,8 +72,14 @@ var CCQueryLimitKey = @"limit";
 
 - (BOOL)saveObject:(Object)anObject
 {
+	var timestamp = [CPString stringWithFormat:@"%d",[[CPDate date] timeIntervalSince1970]];
+	if (shouldAutoUpdateDates) anObject["updated_at"] = timestamp;
+	
 	if (anObject["id"] == nil)
+	{
+		if (shouldAutoUpdateDates) anObject["created_at"] = timestamp;
 		return [self insertObject:anObject];
+	}
 	return [self updateObject:anObject];
 }
 
@@ -134,53 +137,6 @@ function CCModelRecordsWithResult(rs,columns)
 	while (rs.next()) records.push(CCModelRecordWithResult(rs,columns));
 	rs.close();
 	return records;
-}
-
-function CCModelQueryWithObject(queryObject,tableName)
-{
-	var whereStatement = @"";
-	var orderStatement = @"";
-	var limitStatement = @"";
-	
-	if (queryObject != nil)
-	{
-		var conditions = queryObject[CCQueryConditionsKey];
-	
-		if (conditions != nil)
-		{
-			var conditionStrings = [CPMutableArray array];
-		
-			for (var key in conditions)
-			{
-				var value = conditions[key];
-				var conditionString = key+"='"+value+"'";
-				[conditionStrings addObject:conditionString];
-			}
-		
-			if ([conditionStrings count]>0)
-				whereStatement = " WHERE "+[conditionStrings componentsJoinedByString:@", "];
-		}
-		
-		var limit = queryObject[CCQueryLimitKey];
-		if (limit != nil)
-			limitStatement = " LIMIT "+limit;
-
-		var sortDescriptors = queryObject[CCQueryOrderKey];
-		if (sortDescriptors != nil)
-		{
-			var orderStatements = [CPMutableArray array];
-
-			for (var i=0;i<[sortDescriptors count];i++)
-			{
-				var sortDescriptor = [sortDescriptors objectAtIndex:i];
-				[orderStatements addObject:[sortDescriptor key]+" "+[sortDescriptor ascending]?@"ASC":@"DESC"];
-			}
-
-			orderStatement = " ORDER BY "+[orderStatements componentsJoinedByString:@", "];
-		}
-	}
-	
-	return "select * from "+tableName+whereStatement+orderStatement+limitStatement+";";
 }
 
 function CCModelInsertObject(stat,anObject,tableName)

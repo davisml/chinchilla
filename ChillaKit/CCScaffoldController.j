@@ -1,3 +1,5 @@
+@import "CCAppController.j"
+
 @implementation CCScaffoldController : CCAppController
 {
 	CCModel model @accessors;
@@ -24,13 +26,14 @@
 
 - (Object)recordWithID:(CPString)recordID
 {
-	return [model findByID:recordID];
+	return [[self model] findByID:recordID];
 }
 
 - (CPArray)records
 {
 	CCLog(@"return records");
-	return [model findAll];
+	CCLog([[self model] description]);
+	return [[self model] findAll];
 }
 
 @end

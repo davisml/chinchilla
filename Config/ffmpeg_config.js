@@ -1,1 +1,0 @@
-exports.ffmpegPath = "/Applications/ffmpegX.app/Contents/Resources/ffmpeg";
