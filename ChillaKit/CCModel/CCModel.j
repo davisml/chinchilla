@@ -157,4 +157,26 @@ function CCModelInsertObject(stat,anObject,tableName)
 	var sqlString = "INSERT INTO "+tableName+keyString+valueString+";";
 
 	stat.executeUpdate(sqlString);
+	
+	return YES;
+}
+
+function CCModelDeleteObject(stat,anObject,tableName)
+{
+	CCLog(@"CCModelDeleteObject");
+	var conditions = [CPMutableArray array];
+
+	for (var key in anObject)
+	{
+		var conditionString = key+" = '"+anObject[key]+"'";
+		[conditions addObject:conditionString];
+	}
+
+	var whereString = " WHERE "+[conditions componentsJoinedByString:@" AND "];
+	var sqlString = "DELETE FROM "+tableName+whereString+";";
+	
+	CCLog(sqlString);
+	stat.executeUpdate(sqlString);
+	
+	return YES;
 }
