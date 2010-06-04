@@ -6,10 +6,11 @@ var CCJackEnvQueryStringKey = @"QUERY_STRING";
 
 @implementation CCURLRequest : CPObject
 {
-	CPString HTTPMethod @accessors;
-	CPString pathString @accessors;
-	CPString queryString @accessors;
-	Object jsRequest @accessors;
+	CPString		HTTPMethod @accessors;
+	CPString		pathString @accessors;
+	CPString		queryString @accessors;
+	Object			jsRequest @accessors;
+	CPMutableArray	pathComponents;
 }
 
 - (id)initWithEnvironment:(Object)environment
@@ -20,6 +21,7 @@ var CCJackEnvQueryStringKey = @"QUERY_STRING";
 		HTTPMethod = environment[CCJackEnvRequestMethodKey];
 		pathString = environment[CCJackEnvPathInfoKey];
 		queryString = environment[CCJackEnvQueryStringKey];
+		pathComponents = nil;
 	}
 	return self;
 }
@@ -29,17 +31,36 @@ var CCJackEnvQueryStringKey = @"QUERY_STRING";
 	return jsRequest.POST();
 }
 
+- (CPString)controllerComponent
+{
+	if ([[self pathComponents] count]>0)
+		return [[self pathComponents] objectAtIndex:0];
+	return nil;
+}
+
+- (CPString)actionComponent
+{
+	if ([[self pathComponents] count]>1)
+		return [[self pathComponents] objectAtIndex:1];
+	return nil;
+}
+
 - (CPArray)pathComponents
 {
-	var cleanComponents = [CPMutableArray array];
-	var componentArray = [pathString componentsSeparatedByString:@"/"];
-	for (var i=0;i<[componentArray count];i++)
+	if (pathComponents == nil)
 	{
-		var componentString = [componentArray objectAtIndex:i];
-		if ([componentString length]>0)
-			[cleanComponents addObject:componentString];
+		pathComponents = [[CPMutableArray alloc] init];
+		
+		var componentArray = [pathString componentsSeparatedByString:@"/"];
+		for (var i=0;i<[componentArray count];i++)
+		{
+			var componentString = [componentArray objectAtIndex:i];
+			if ([componentString length]>0)
+				[pathComponents addObject:componentString];
+		}
 	}
-	return cleanComponents;
+	
+	return pathComponents;
 }
 
 + (id)requestWithEnvironment:(Object)environment

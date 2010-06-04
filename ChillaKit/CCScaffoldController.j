@@ -1,26 +1,34 @@
 @import "CCAppController.j"
 
-@implementation CCScaffoldController : CCAppController
+@implementation CCScaffoldController : CCController
 {
 	CCModel model @accessors;
 }
 
-- (Object)dispatchRequest:(CCURLRequest)request
+- (id)init
 {
-	var pathComponents = [request pathComponents];
-	
-	if ([pathComponents count]>1)
+	if (self = [super init])
 	{
-		var actionName = [pathComponents objectAtIndex:1];
-		if ([actionName isEqual:@"view"]&&[pathComponents count]>2)
-		{
-			var record = [self recordWithID:[pathComponents objectAtIndex:2]];
-			return [[MAJSONLayout layoutWithContent:record] responseObject];
-		}
-		else if (![actionName hasPrefix:@"?"])
-			return [[CCHTMLLayout layoutWithContent:@"Action not found"] responseObject];
+		[self exposeAction:@selector(view:) forPath:@"view/:obj1"];
+		[self exposeDefaultAction:@selector(list)];
 	}
+	return self;
+}
+
+- (Object)view:(CPString)recordID
+{
+	CCLog("view item: "+recordID);
 	
+	if (recordID != nil)
+		return [[MAJSONLayout layoutWithContent:[self recordWithID:recordID]] responseObject];
+	
+	var errorLayout = [CCLayout layout];
+	[errorLayout setStatus:400];
+	return errorLayout;
+}
+
+- (Object)list
+{
 	return [[MAJSONLayout layoutWithContent:[self records]] responseObject];
 }
 
